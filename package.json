@@ -1,14 +1,19 @@
 {
-  "name": "profile-generator",
+  "name": "gepa-profile-generator",
   "version": "1.0.0",
-  "description": "A front-end web app for generating profile pictures with custom templates",
+  "description": "Beautiful responsive web app for creating GEPA profile pictures",
   "main": "index.html",
+  "type": "module",
   "scripts": {
     "dev": "python -m http.server 3000",
-    "build": "echo 'No build step required for static site'",
-    "start": "echo 'Static site - use a web server'"
+    "start": "python -m http.server 8080"
   },
-  "keywords": ["profile", "generator", "image", "template"],
-  "author": "Your Name",
-  "license": "MIT"
+  "keywords": ["gepa", "profile", "generator", "image", "template", "canvas"],
+  "author": "Mystique1337",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mystique1337/gepa-profile-generator.git"
+  },
+  "homepage": "https://github.com/Mystique1337/gepa-profile-generator"
 }
