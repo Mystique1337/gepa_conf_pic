@@ -1,0 +1,14 @@
+{
+  "name": "profile-generator",
+  "version": "1.0.0",
+  "description": "A front-end web app for generating profile pictures with custom templates",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 3000",
+    "build": "echo 'No build step required for static site'",
+    "start": "echo 'Static site - use a web server'"
+  },
+  "keywords": ["profile", "generator", "image", "template"],
+  "author": "Your Name",
+  "license": "MIT"
+}
