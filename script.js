@@ -1,32 +1,102 @@
 class SimpleProfileGenerator {
     constructor() {
-        this.canvas = document.getElementById('preview-canvas');
-        this.ctx = this.canvas.getContext('2d');
+        this.canvas = document.getElementById('preview-canvas')        // Social media share buttons
+        this.shareLinkedIn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            console.log('LinkedIn button clicked!');
+            try {
+                await this.shareToLinkedIn();
+            } catch (error) {
+                console.error('LinkedIn share error:', error);
+            }
+        });
+        this.shareTwitter.addEventListener('click', async (e) => {
+            e.preventDefault();
+            console.log('Twitter button clicked!');
+            try {
+                await this.shareToTwitter();
+            } catch (error) {
+                console.error('Twitter share error:', error);
+            }
+        });
+        this.shareFacebook.addEventListener('click', async (e) => {
+            e.preventDefault();
+            console.log('Facebook button clicked!');
+            try {
+                await this.shareToFacebook();
+            } catch (error) {
+                console.error('Facebook share error:', error);
+            }
+        });
+        this.shareWhatsApp.addEventListener('click', async (e) => {
+            e.preventDefault();
+            console.log('WhatsApp button clicked!');
+            try {
+                await this.shareToWhatsApp();
+            } catch (error) {
+                console.error('WhatsApp share error:', error);
+            }
+        });
+        this.shareInstagram.addEventListener('click', async (e) => {
+            e.preventDefault();
+            console.log('Instagram button clicked!');
+            try {
+                await this.shareToInstagram();
+            } catch (error) {
+                console.error('Instagram share error:', error);
+            }
+        });     this.ctx = this.canvas.getContext('2d');
         this.templateImg = null;
         this.userImg = null;
         this.userName = '';
-        this.userTrack = '';
         
         // DOM elements
         this.photoUpload = document.getElementById('photo-upload');
         this.uploadArea = document.getElementById('upload-area');
         this.uploadSuccess = document.getElementById('upload-success');
         this.nameInput = document.getElementById('name-input');
-        this.trackSelect = document.getElementById('track-select');
+        this.generateBtn = document.getElementById('generate-btn');
         this.downloadBtn = document.getElementById('download-btn');
         this.statusMessage = document.getElementById('status-message');
+        this.shareSection = document.getElementById('share-section');
         
-        // Fixed positioning (no user adjustment needed) - Using PROPER CONFIG values
-        this.circlePosition = { x: 0.31, y: 0.645 };
-        this.namePosition = { x: 0.7, y: 0.635 };
-        this.trackPosition = { x: 0.7, y: 0.71 };
+        // State tracking
+        this.profileGenerated = false;
         
-        // Fixed sizing configuration - Using PROPER CONFIG values
+        // Social media share buttons
+        this.shareLinkedIn = document.getElementById('share-linkedin');
+        this.shareTwitter = document.getElementById('share-twitter');
+        this.shareFacebook = document.getElementById('share-facebook');
+        this.shareWhatsApp = document.getElementById('share-whatsapp');
+        this.shareInstagram = document.getElementById('share-instagram');
+        
+        // Share message
+        this.shareMessage = `I will be at Faith & Energy Conference 1.0 🔥
+
+📅 Nov 15, 2025
+📍 Pistis Annex Marwa, Lekki Lagos
+🕘 9AM sharp
+Theme: "The Great Light" (Matthew 4:16)
+
+If you are ready for growth, faith, and powerful inspiration, you should totally be there too! 💥
+👉 Register at conference.gepafrica.com
+
+#FaithAndEnergy #GEPA #TheGreatLight #IWillBeAttending #FaithVibesOnly`;
+        
+        // Store generated profile image
+        this.profileImageBlob = null;
+        this.profileImageFile = null;
+        
+        // Rectangle position and sizing (for new template with rectangular image area)
+        // Based on the visible template layout - fine-tuned positioning
+        this.rectanglePosition = { x: 0.10, y: 0.28 }; // Top-left corner of rectangle (white frame)
+        this.rectangleSize = { width: 0.34, height: 0.38 }; // Width and height as proportion of template
+        this.namePosition = { x: 0.27, y: 0.70 }; // Centered in the black name bar
+        
+        // Fixed sizing configuration
         this.config = {
-            circleSize: 0.21,
-            nameFontSize: 0.052,
-            trackFontSize: 0.04,
-            maxTextWidth: 0.29
+            nameFontSize: 0.035,
+            maxTextWidth: 0.38
         };
         
         this.init();
@@ -82,14 +152,18 @@ class SimpleProfileGenerator {
             this.updateFormState();
         });
         
-        this.trackSelect.addEventListener('change', () => {
-            this.userTrack = this.trackSelect.value;
-            this.drawProfile();
-            this.updateFormState();
-        });
+        // Generate button
+        this.generateBtn.addEventListener('click', () => this.generateProfile());
         
         // Download button
         this.downloadBtn.addEventListener('click', () => this.downloadProfile());
+        
+        // Social media share buttons
+        this.shareLinkedIn.addEventListener('click', () => this.shareToLinkedIn());
+        this.shareTwitter.addEventListener('click', () => this.shareToTwitter());
+        this.shareFacebook.addEventListener('click', () => this.shareToFacebook());
+        this.shareWhatsApp.addEventListener('click', () => this.shareToWhatsApp());
+        this.shareInstagram.addEventListener('click', () => this.shareToInstagram());
     }
     
     loadTemplate() {
@@ -97,7 +171,7 @@ class SimpleProfileGenerator {
         this.templateImg.onload = () => {
             this.drawTemplate();
         };
-        this.templateImg.src = 'template.jpg';
+        this.templateImg.src = 'New_template.jpg';
     }
     
     drawTemplate() {
@@ -209,64 +283,57 @@ class SimpleProfileGenerator {
         const templateX = (this.canvas.width - drawWidth) / 2;
         const templateY = (this.canvas.height - drawHeight) / 2;
         
-        // Calculate circle position based on template scale and position
-        const circleX = templateX + (drawWidth * this.circlePosition.x);
-        const circleY = templateY + (drawHeight * this.circlePosition.y);
-        const circleRadius = drawWidth * this.config.circleSize;
+        // Calculate rectangle position and size based on template scale and position
+        const rectX = templateX + (drawWidth * this.rectanglePosition.x);
+        const rectY = templateY + (drawHeight * this.rectanglePosition.y);
+        const rectWidth = drawWidth * this.rectangleSize.width;
+        const rectHeight = drawHeight * this.rectangleSize.height;
         
-        // Draw user image in circle
+        // Draw user image in rectangle
         this.ctx.save();
         
-        // Create circular clipping mask
+        // Create rectangular clipping mask
         this.ctx.beginPath();
-        this.ctx.arc(circleX, circleY, circleRadius, 0, 2 * Math.PI);
+        this.ctx.rect(rectX, rectY, rectWidth, rectHeight);
         this.ctx.clip();
         
-        // Calculate dimensions to fill the entire circle
+        // Calculate dimensions to fill the entire rectangle while maintaining aspect ratio
         const imgAspect = this.userImg.width / this.userImg.height;
-        const circleDiameter = circleRadius * 2;
+        const rectAspect = rectWidth / rectHeight;
         
         let imgWidth, imgHeight;
-        if (imgAspect > 1) {
-            // Wide image - make sure height covers the full circle
-            imgHeight = circleDiameter;
+        if (imgAspect > rectAspect) {
+            // Wide image - make sure height covers the full rectangle
+            imgHeight = rectHeight;
             imgWidth = imgHeight * imgAspect;
         } else {
-            // Tall image - make sure width covers the full circle
-            imgWidth = circleDiameter;
+            // Tall image - make sure width covers the full rectangle
+            imgWidth = rectWidth;
             imgHeight = imgWidth / imgAspect;
         }
         
-        // Center the image in the circle
-        const imgX = circleX - imgWidth / 2;
-        const imgY = circleY - imgHeight / 2;
+        // Center the image in the rectangle
+        const imgX = rectX + (rectWidth - imgWidth) / 2;
+        const imgY = rectY + (rectHeight - imgHeight) / 2;
         
         // Draw image
         this.ctx.drawImage(this.userImg, imgX, imgY, imgWidth, imgHeight);
         this.ctx.restore();
         
-        // Draw text if available
+        // Draw name text in white if available
         if (this.userName) {
             const textX = templateX + (drawWidth * this.namePosition.x);
             const nameY = templateY + (drawHeight * this.namePosition.y);
             
-            this.ctx.fillStyle = '#000000';
+            this.ctx.fillStyle = '#FFFFFF'; // White color for name
             this.ctx.textAlign = 'center';
             this.drawConstrainedText(textX, nameY, this.userName.toUpperCase(), drawWidth, true);
-        }
-        
-        if (this.userTrack) {
-            const textX = templateX + (drawWidth * this.trackPosition.x);
-            const trackY = templateY + (drawHeight * this.trackPosition.y);
-            
-            this.ctx.fillStyle = '#555555';
-            this.drawConstrainedText(textX, trackY, this.userTrack, drawWidth, false);
         }
     }
     
     drawConstrainedText(x, y, text, templateWidth, isBold = false) {
-        const baseFontSize = templateWidth * (isBold ? this.config.nameFontSize : this.config.trackFontSize);
-        const minFontSize = isBold ? 12 : 10;
+        const baseFontSize = templateWidth * this.config.nameFontSize;
+        const minFontSize = 12;
         let currentFontSize = Math.max(baseFontSize, minFontSize);
         
         const maxWidth = templateWidth * this.config.maxTextWidth;
@@ -288,118 +355,78 @@ class SimpleProfileGenerator {
     updateFormState() {
         const hasImage = this.userImg !== null;
         const hasName = this.userName.trim().length > 0;
-        const hasTrack = this.userTrack.length > 0;
         
         // Update form styling
         this.nameInput.parentElement.classList.toggle('filled', hasName);
-        this.trackSelect.parentElement.classList.toggle('filled', hasTrack);
         
-        // Update button state
-        const canDownload = hasImage && hasName && hasTrack;
-        this.downloadBtn.disabled = !canDownload;
+        // Update generate button state
+        const canGenerate = hasImage && hasName && !this.profileGenerated;
+        this.generateBtn.disabled = !canGenerate;
+        
+        // Show/hide share section based on generation state
+        if (this.profileGenerated) {
+            this.shareSection.style.display = 'block';
+            this.generateBtn.style.display = 'none';
+            this.statusMessage.style.display = 'none';
+        } else {
+            this.shareSection.style.display = 'none';
+            this.generateBtn.style.display = 'block';
+            this.statusMessage.style.display = 'block';
+        }
         
         // Update status message
-        if (!hasImage) {
-            this.statusMessage.textContent = 'Please upload a photo';
-        } else if (!hasName) {
-            this.statusMessage.textContent = 'Please enter your name';
-        } else if (!hasTrack) {
-            this.statusMessage.textContent = 'Please select your track';
-        } else {
-            this.statusMessage.textContent = 'Ready to generate profile!';
-            this.statusMessage.style.color = '#28a745';
+        if (!this.profileGenerated) {
+            if (!hasImage) {
+                this.statusMessage.textContent = 'Please upload a photo';
+                this.statusMessage.style.color = '';
+            } else if (!hasName) {
+                this.statusMessage.textContent = 'Please enter your name';
+                this.statusMessage.style.color = '';
+            } else {
+                this.statusMessage.textContent = 'Ready to generate your profile! Click the button above';
+                this.statusMessage.style.color = '#28a745';
+            }
         }
     }
     
-    downloadProfile() {
-        if (!this.userImg || !this.userName || !this.userTrack) {
-            alert('Please complete all fields before downloading.');
+    generateProfile() {
+        if (!this.userImg || !this.userName) {
+            alert('Please upload a photo and enter your name.');
             return;
         }
         
-        // Create high-resolution canvas for download
-        const downloadCanvas = document.createElement('canvas');
-        const downloadCtx = downloadCanvas.getContext('2d');
+        // Show generating message
+        this.generateBtn.textContent = 'Generating...';
+        this.generateBtn.disabled = true;
         
-        // Use the original template dimensions for download (2x scale for high quality)
-        const scale = 2;
-        downloadCanvas.width = this.templateImg.width * scale;
-        downloadCanvas.height = this.templateImg.height * scale;
-        
-        // Enable high quality rendering
-        downloadCtx.imageSmoothingEnabled = true;
-        downloadCtx.imageSmoothingQuality = 'high';
-        
-        // Draw template at full resolution
-        downloadCtx.drawImage(this.templateImg, 0, 0, downloadCanvas.width, downloadCanvas.height);
-        
-        // Calculate positions based on original template size
-        const templateWidth = downloadCanvas.width;
-        const templateHeight = downloadCanvas.height;
-        
-        // Calculate circle position and size
-        const circleX = templateWidth * this.circlePosition.x;
-        const circleY = templateHeight * this.circlePosition.y;
-        const circleRadius = templateWidth * this.config.circleSize;
-        
-        // Draw user image in circle
-        downloadCtx.save();
-        downloadCtx.beginPath();
-        downloadCtx.arc(circleX, circleY, circleRadius, 0, 2 * Math.PI);
-        downloadCtx.clip();
-        
-        // Calculate image dimensions to fill the entire circle
-        const imgAspect = this.userImg.width / this.userImg.height;
-        const circleDiameter = circleRadius * 2;
-        
-        let imgWidth, imgHeight;
-        if (imgAspect > 1) {
-            imgHeight = circleDiameter;
-            imgWidth = imgHeight * imgAspect;
-        } else {
-            imgWidth = circleDiameter;
-            imgHeight = imgWidth / imgAspect;
+        // Generate the profile image immediately
+        this.generateProfileImageForSharing().then(() => {
+            // Mark as generated
+            this.profileGenerated = true;
+            
+            // Update the UI to show share section
+            this.updateFormState();
+            
+            // Scroll to share section
+            setTimeout(() => {
+                this.shareSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        });
+    }
+    
+    downloadProfile() {
+        if (!this.profileImageFile) {
+            alert('Please generate your profile first.');
+            return;
         }
         
-        const imgX = circleX - imgWidth / 2;
-        const imgY = circleY - imgHeight / 2;
-        
-        downloadCtx.drawImage(this.userImg, imgX, imgY, imgWidth, imgHeight);
-        downloadCtx.restore();
-        
-        // Draw text
-        const nameX = templateWidth * this.namePosition.x;
-        const nameY = templateHeight * this.namePosition.y;
-        const trackX = templateWidth * this.trackPosition.x;
-        const trackY = templateHeight * this.trackPosition.y;
-        
-        // Draw name text
-        downloadCtx.fillStyle = '#000000';
-        downloadCtx.textAlign = 'center';
-        this.drawHighResText(downloadCtx, nameX, nameY, this.userName.toUpperCase(), templateWidth, true);
-        
-        // Draw track text
-        downloadCtx.fillStyle = '#555555';
-        this.drawHighResText(downloadCtx, trackX, trackY, this.userTrack, templateWidth, false);
-        
-        // Create download link
-        const link = document.createElement('a');
-        const fileName = `${this.userName.replace(/\s+/g, '_')}_GEPA_Profile.png`;
-        
-        downloadCanvas.toBlob((blob) => {
-            const url = URL.createObjectURL(blob);
-            link.href = url;
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        }, 'image/png', 1.0);
+        // Use the helper method to download
+        this.downloadProfileImage();
     }
     
     drawHighResText(ctx, x, y, text, templateWidth, isBold = false) {
-        const baseFontSize = templateWidth * (isBold ? this.config.nameFontSize : this.config.trackFontSize);
-        const minFontSize = isBold ? 24 : 20; // Higher minimum for high-res
+        const baseFontSize = templateWidth * this.config.nameFontSize;
+        const minFontSize = 24; // Higher minimum for high-res
         let currentFontSize = Math.max(baseFontSize, minFontSize);
         
         const maxWidth = templateWidth * this.config.maxTextWidth;
@@ -416,6 +443,296 @@ class SimpleProfileGenerator {
         
         // Draw the text
         ctx.fillText(text, x, y);
+    }
+    
+    // Generate profile image for sharing
+    async generateProfileImageForSharing() {
+        return new Promise((resolve) => {
+            if (this.profileImageBlob) {
+                resolve(this.profileImageFile);
+                return;
+            }
+            
+            // Generate the image if not already generated
+            const downloadCanvas = document.createElement('canvas');
+            const downloadCtx = downloadCanvas.getContext('2d');
+            
+            const scale = 2;
+            downloadCanvas.width = this.templateImg.width * scale;
+            downloadCanvas.height = this.templateImg.height * scale;
+            
+            downloadCtx.imageSmoothingEnabled = true;
+            downloadCtx.imageSmoothingQuality = 'high';
+            
+            downloadCtx.drawImage(this.templateImg, 0, 0, downloadCanvas.width, downloadCanvas.height);
+            
+            const templateWidth = downloadCanvas.width;
+            const templateHeight = downloadCanvas.height;
+            
+            const rectX = templateWidth * this.rectanglePosition.x;
+            const rectY = templateHeight * this.rectanglePosition.y;
+            const rectWidth = templateWidth * this.rectangleSize.width;
+            const rectHeight = templateHeight * this.rectangleSize.height;
+            
+            downloadCtx.save();
+            downloadCtx.beginPath();
+            downloadCtx.rect(rectX, rectY, rectWidth, rectHeight);
+            downloadCtx.clip();
+            
+            const imgAspect = this.userImg.width / this.userImg.height;
+            const rectAspect = rectWidth / rectHeight;
+            
+            let imgWidth, imgHeight;
+            if (imgAspect > rectAspect) {
+                imgHeight = rectHeight;
+                imgWidth = imgHeight * imgAspect;
+            } else {
+                imgWidth = rectWidth;
+                imgHeight = imgWidth / imgAspect;
+            }
+            
+            const imgX = rectX + (rectWidth - imgWidth) / 2;
+            const imgY = rectY + (rectHeight - imgHeight) / 2;
+            
+            downloadCtx.drawImage(this.userImg, imgX, imgY, imgWidth, imgHeight);
+            downloadCtx.restore();
+            
+            const nameX = templateWidth * this.namePosition.x;
+            const nameY = templateHeight * this.namePosition.y;
+            
+            downloadCtx.fillStyle = '#FFFFFF';
+            downloadCtx.textAlign = 'center';
+            this.drawHighResText(downloadCtx, nameX, nameY, this.userName.toUpperCase(), templateWidth, true);
+            
+            const fileName = `${this.userName.replace(/\s+/g, '_')}_GEPA_Profile.png`;
+            
+            downloadCanvas.toBlob((blob) => {
+                this.profileImageBlob = blob;
+                this.profileImageFile = new File([blob], fileName, { type: 'image/png' });
+                resolve(this.profileImageFile);
+            }, 'image/png', 1.0);
+        });
+    }
+
+    
+    // Helper method to download the profile image
+    downloadProfileImage() {
+        if (!this.profileImageBlob || !this.profileImageFile) {
+            console.error('No profile image to download');
+            return;
+        }
+        const url = URL.createObjectURL(this.profileImageBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = this.profileImageFile.name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(url), 100);
+    }
+    
+    // CORE SHARE FUNCTION - Handles all sharing logic
+    async shareProfile(platformName, platformUrl = null, useNativeShare = true) {
+        try {
+            console.log(`\n🚀 Starting share to ${platformName}...`);
+            
+            // Ensure image is generated
+            if (!this.profileImageFile) {
+                console.log('⚙️ Generating profile image...');
+                await this.generateProfileImageForSharing();
+            }
+            
+            console.log('✓ Profile image ready:', this.profileImageFile);
+            
+            // Strategy 1: Try Web Share API (works on mobile and some modern desktop browsers)
+            if (useNativeShare && navigator.share) {
+                console.log('📱 Checking Web Share API support...');
+                
+                try {
+                    const shareData = {
+                        files: [this.profileImageFile],
+                        title: 'Faith & Energy Conference 1.0',
+                        text: this.shareMessage
+                    };
+                    
+                    // Check if browser can share this data
+                    if (navigator.canShare && navigator.canShare(shareData)) {
+                        console.log('✓ Web Share API available - opening share dialog...');
+                        await navigator.share(shareData);
+                        console.log('✅ Share successful!');
+                        this.showShareSuccess(platformName);
+                        return; // SUCCESS - sharing completed
+                    } else {
+                        console.log('⚠️ Web Share API cannot share files on this browser');
+                    }
+                } catch (error) {
+                    if (error.name === 'AbortError') {
+                        console.log('ℹ️ User cancelled share');
+                        return; // User cancelled - not an error
+                    }
+                    console.log('⚠️ Web Share API failed:', error.message);
+                    // Continue to fallback strategies
+                }
+            } else {
+                console.log('ℹ️ Web Share API not used (disabled or not available)');
+            }
+            
+            // Strategy 2: Open platform directly with helpers
+            console.log(`🌐 Using platform URL strategy for ${platformName}...`);
+            
+            // Try to copy image to clipboard (silent - helps on desktop)
+            let imageCopied = false;
+            try {
+                if (navigator.clipboard && navigator.clipboard.write) {
+                    console.log('📋 Attempting to copy image to clipboard...');
+                    const clipboardItem = new ClipboardItem({
+                        'image/png': this.profileImageBlob
+                    });
+                    await navigator.clipboard.write([clipboardItem]);
+                    imageCopied = true;
+                    console.log('✓ Image copied to clipboard');
+                }
+            } catch (err) {
+                console.log('⚠️ Could not copy image:', err.message);
+            }
+            
+            // Try to copy text to clipboard
+            let textCopied = false;
+            try {
+                console.log('📝 Attempting to copy text to clipboard...');
+                await navigator.clipboard.writeText(this.shareMessage);
+                textCopied = true;
+                console.log('✓ Text copied to clipboard');
+            } catch (err) {
+                console.log('⚠️ Could not copy text:', err.message);
+            }
+            
+            // Open the platform
+            if (platformUrl) {
+                console.log(`🌐 Opening ${platformName}:`, platformUrl);
+                window.open(platformUrl, '_blank', 'noopener,noreferrer');
+            } else {
+                console.log(`ℹ️ No URL for ${platformName} - image needs to be downloaded`);
+                // For Instagram on desktop, download the image
+                this.downloadProfileImage();
+            }
+            
+            // Give user feedback based on what worked
+            if (imageCopied && textCopied) {
+                console.log(`✅ Ready to share on ${platformName} - image and text in clipboard`);
+                this.showShareInstructions(platformName, 'both');
+            } else if (imageCopied) {
+                console.log(`✅ Ready to share on ${platformName} - image in clipboard`);
+                this.showShareInstructions(platformName, 'image');
+            } else if (textCopied) {
+                console.log(`✅ Ready to share on ${platformName} - text in clipboard`);
+                this.showShareInstructions(platformName, 'text');
+            } else {
+                console.log(`ℹ️ ${platformName} opened - manual upload needed`);
+                this.showShareInstructions(platformName, 'manual');
+            }
+            
+        } catch (error) {
+            console.error('❌ Share error:', error);
+            alert(`Unable to share right now. Please try:\n1. Download your profile using the Download button\n2. Manually post to ${platformName}`);
+        }
+    }
+    
+    // Show share success message
+    showShareSuccess(platformName) {
+        const badge = document.querySelector('.success-badge');
+        if (badge) {
+            const text = badge.querySelector('.badge-text h3');
+            if (text) {
+                text.textContent = `Shared to ${platformName}! 🎉`;
+                setTimeout(() => {
+                    text.textContent = 'Profile Generated Successfully!';
+                }, 3000);
+            }
+        }
+    }
+    
+    // Show helpful instructions based on what was copied
+    showShareInstructions(platformName, copiedType) {
+        let message = '';
+        
+        switch(copiedType) {
+            case 'both':
+                message = `✅ ${platformName} opened!\n\nImage and text copied to clipboard.\nJust paste (Ctrl+V) in the ${platformName} post!`;
+                break;
+            case 'image':
+                message = `✅ ${platformName} opened!\n\nImage copied to clipboard.\nPaste it (Ctrl+V) and add your message.`;
+                break;
+            case 'text':
+                message = `✅ ${platformName} opened!\n\nCaption copied to clipboard.\nUpload the image and paste the caption.`;
+                break;
+            case 'manual':
+                message = `✅ ${platformName} opened!\n\nPlease upload the image manually and use the provided caption.`;
+                break;
+        }
+        
+        if (message) {
+            // Show as a temporary toast notification instead of alert
+            console.log(message);
+            const statusMsg = document.getElementById('status-message');
+            if (statusMsg) {
+                const originalText = statusMsg.textContent;
+                statusMsg.textContent = message.split('\n')[0];
+                statusMsg.style.color = '#2d9a8c';
+                setTimeout(() => {
+                    statusMsg.textContent = originalText;
+                    statusMsg.style.color = '';
+                }, 5000);
+            }
+        }
+    }
+    
+    // SOCIAL MEDIA SHARE METHODS
+    async shareToLinkedIn() {
+        console.log('=== LinkedIn Share Started ===');
+        await this.shareProfile(
+            'LinkedIn',
+            'https://www.linkedin.com/feed/',
+            true // Allow Web Share API
+        );
+    }
+    
+    async shareToTwitter() {
+        console.log('=== Twitter/X Share Started ===');
+        const text = encodeURIComponent(this.shareMessage);
+        await this.shareProfile(
+            'Twitter/X',
+            `https://twitter.com/intent/tweet?text=${text}`,
+            true // Allow Web Share API
+        );
+    }
+    
+    async shareToFacebook() {
+        console.log('=== Facebook Share Started ===');
+        await this.shareProfile(
+            'Facebook',
+            'https://www.facebook.com/',
+            true // Allow Web Share API
+        );
+    }
+    
+    async shareToWhatsApp() {
+        console.log('=== WhatsApp Share Started ===');
+        const text = encodeURIComponent(this.shareMessage);
+        await this.shareProfile(
+            'WhatsApp',
+            `https://wa.me/?text=${text}`,
+            true // Allow Web Share API - works great on mobile
+        );
+    }
+    
+    async shareToInstagram() {
+        console.log('=== Instagram Share Started ===');
+        await this.shareProfile(
+            'Instagram',
+            null, // Instagram has no web posting URL
+            true // Allow Web Share API on mobile
+        );
     }
 }
 

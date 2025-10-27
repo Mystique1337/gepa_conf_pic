@@ -219,11 +219,35 @@ body {
     box-shadow: none;
 }
 
+.btn-large {
+    padding: 18px 40px;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.btn-icon {
+    font-size: 1.3rem;
+    margin-right: 8px;
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, var(--dark-gray), var(--text-dark));
+    color: var(--white);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, var(--text-dark), var(--dark-gray));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
 .status-message {
     margin-top: 15px;
     color: var(--text-light);
     font-size: 0.9rem;
     font-style: italic;
+    text-align: center;
 }
 
 /* Preview Section */
@@ -576,4 +600,188 @@ body {
 
 .btn-primary:not(:disabled):active {
     animation: pulse 0.3s ease;
+}
+
+/* Social Media Share Section */
+.share-section {
+    margin-top: 30px;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.success-badge {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(45, 154, 140, 0.1));
+    border: 2px solid var(--success-green);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.badge-icon {
+    font-size: 2.5rem;
+    animation: bounce 1s ease infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.badge-text h3 {
+    color: var(--success-green);
+    font-size: 1.4rem;
+    margin-bottom: 5px;
+}
+
+.badge-text p {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.share-actions {
+    margin-bottom: 25px;
+}
+
+.share-actions h4 {
+    color: var(--primary-teal);
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.share-description {
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+}
+
+.social-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--white);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.social-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.social-btn:active {
+    transform: translateY(0);
+}
+
+.social-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.linkedin-btn {
+    background: linear-gradient(135deg, #0077B5, #005582);
+}
+
+.linkedin-btn:hover {
+    background: linear-gradient(135deg, #005582, #004060);
+}
+
+.twitter-btn {
+    background: linear-gradient(135deg, #000000, #14171A);
+}
+
+.twitter-btn:hover {
+    background: linear-gradient(135deg, #14171A, #000000);
+}
+
+.facebook-btn {
+    background: linear-gradient(135deg, #1877F2, #0d5dbf);
+}
+
+.facebook-btn:hover {
+    background: linear-gradient(135deg, #0d5dbf, #0a4a99);
+}
+
+.whatsapp-btn {
+    background: linear-gradient(135deg, #25D366, #1da851);
+}
+
+.whatsapp-btn:hover {
+    background: linear-gradient(135deg, #1da851, #128C7E);
+}
+
+.instagram-btn {
+    background: linear-gradient(135deg, #E1306C, #C13584, #833AB4, #5851DB);
+}
+
+.instagram-btn:hover {
+    background: linear-gradient(135deg, #C13584, #833AB4, #5851DB, #405DE6);
+}
+
+/* Download Section */
+.download-section {
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 2px dashed var(--medium-gray);
+    text-align: center;
+}
+
+.download-hint {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+    font-style: italic;
+}
+
+.download-section .btn {
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Mobile responsiveness for social buttons */
+@media (max-width: 768px) {
+    .social-buttons {
+        grid-template-columns: 1fr;
+    }
+    
+    .social-btn {
+        width: 100%;
+    }
+    
+    .success-badge {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .badge-icon {
+        font-size: 3rem;
+    }
 }
