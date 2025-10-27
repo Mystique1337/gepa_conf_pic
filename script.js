@@ -1,51 +1,7 @@
 class SimpleProfileGenerator {
     constructor() {
-        this.canvas = document.getElementById('preview-canvas')        // Social media share buttons
-        this.shareLinkedIn.addEventListener('click', async (e) => {
-            e.preventDefault();
-            console.log('LinkedIn button clicked!');
-            try {
-                await this.shareToLinkedIn();
-            } catch (error) {
-                console.error('LinkedIn share error:', error);
-            }
-        });
-        this.shareTwitter.addEventListener('click', async (e) => {
-            e.preventDefault();
-            console.log('Twitter button clicked!');
-            try {
-                await this.shareToTwitter();
-            } catch (error) {
-                console.error('Twitter share error:', error);
-            }
-        });
-        this.shareFacebook.addEventListener('click', async (e) => {
-            e.preventDefault();
-            console.log('Facebook button clicked!');
-            try {
-                await this.shareToFacebook();
-            } catch (error) {
-                console.error('Facebook share error:', error);
-            }
-        });
-        this.shareWhatsApp.addEventListener('click', async (e) => {
-            e.preventDefault();
-            console.log('WhatsApp button clicked!');
-            try {
-                await this.shareToWhatsApp();
-            } catch (error) {
-                console.error('WhatsApp share error:', error);
-            }
-        });
-        this.shareInstagram.addEventListener('click', async (e) => {
-            e.preventDefault();
-            console.log('Instagram button clicked!');
-            try {
-                await this.shareToInstagram();
-            } catch (error) {
-                console.error('Instagram share error:', error);
-            }
-        });     this.ctx = this.canvas.getContext('2d');
+        this.canvas = document.getElementById('preview-canvas');
+        this.ctx = this.canvas.getContext('2d');
         this.templateImg = null;
         this.userImg = null;
         this.userName = '';
