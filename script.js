@@ -111,20 +111,41 @@ If you are ready for growth, faith, and powerful inspiration, you should totally
     
     bindEvents() {
         // File upload events
-        this.photoUpload.addEventListener('change', (e) => this.handleFileSelect(e));
-        this.uploadArea.addEventListener('click', () => this.photoUpload.click());
-        
-        // Touch-friendly upload area
-        this.uploadArea.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            this.uploadArea.style.transform = 'scale(0.98)';
+        this.photoUpload.addEventListener('change', (e) => {
+            console.log('📁 File input changed:', e.target.files);
+            this.handleFileSelect(e);
         });
         
-        this.uploadArea.addEventListener('touchend', (e) => {
+        // Click event for upload area
+        this.uploadArea.addEventListener('click', (e) => {
+            console.log('🖱️ Upload area clicked');
             e.preventDefault();
-            this.uploadArea.style.transform = 'scale(1)';
+            e.stopPropagation();
             this.photoUpload.click();
         });
+        
+        // Touch events for mobile - simplified and more reliable
+        let touchHandled = false;
+        
+        this.uploadArea.addEventListener('touchstart', (e) => {
+            console.log('👆 Touch start on upload area');
+            touchHandled = false;
+            this.uploadArea.style.transform = 'scale(0.98)';
+        }, { passive: true });
+        
+        this.uploadArea.addEventListener('touchend', (e) => {
+            console.log('👆 Touch end on upload area');
+            this.uploadArea.style.transform = 'scale(1)';
+            
+            if (!touchHandled) {
+                touchHandled = true;
+                // Small delay to ensure touch is registered
+                setTimeout(() => {
+                    console.log('📱 Triggering file input from touch');
+                    this.photoUpload.click();
+                }, 100);
+            }
+        }, { passive: true });
         
         // Drag and drop events (desktop)
         this.uploadArea.addEventListener('dragover', (e) => {
@@ -140,6 +161,7 @@ If you are ready for growth, faith, and powerful inspiration, you should totally
             e.preventDefault();
             this.uploadArea.classList.remove('dragover');
             const files = e.dataTransfer.files;
+            console.log('📂 Files dropped:', files);
             if (files.length > 0) {
                 this.loadUserImage(files[0]);
             }
@@ -217,34 +239,73 @@ If you are ready for growth, faith, and powerful inspiration, you should totally
     
     handleFileSelect(e) {
         const file = e.target.files[0];
+        console.log('📷 File selected:', file);
         if (file) {
             this.loadUserImage(file);
+        } else {
+            console.warn('⚠️ No file selected');
         }
     }
     
     loadUserImage(file) {
-        if (file && file.type.startsWith('image/')) {
-            this.uploadArea.classList.add('uploading');
-            this.uploadSuccess.style.display = 'none';
-            this.statusMessage.textContent = 'Uploading image...';
-            
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                this.userImg = new Image();
-                this.userImg.onload = () => {
-                    this.uploadArea.classList.remove('uploading');
-                    this.uploadArea.classList.add('uploaded');
-                    
-                    // Show success notification
-                    this.showUploadSuccess();
-                    
-                    this.drawProfile();
-                    this.updateFormState();
-                };
-                this.userImg.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+        console.log('🖼️ Loading image:', file.name, file.type, file.size);
+        
+        if (!file) {
+            console.error('❌ No file provided');
+            return;
         }
+        
+        if (!file.type.startsWith('image/')) {
+            console.error('❌ Invalid file type:', file.type);
+            alert('Please upload an image file (PNG, JPG, etc.)');
+            return;
+        }
+        
+        // Check file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            console.error('❌ File too large:', file.size);
+            alert('Image is too large. Please upload an image smaller than 10MB.');
+            return;
+        }
+        
+        this.uploadArea.classList.add('uploading');
+        this.uploadSuccess.style.display = 'none';
+        this.statusMessage.textContent = 'Uploading image...';
+        
+        const reader = new FileReader();
+        
+        reader.onerror = (error) => {
+            console.error('❌ FileReader error:', error);
+            this.uploadArea.classList.remove('uploading');
+            this.statusMessage.textContent = 'Error reading file. Please try again.';
+        };
+        
+        reader.onload = (e) => {
+            console.log('✓ File read successfully');
+            this.userImg = new Image();
+            
+            this.userImg.onerror = (error) => {
+                console.error('❌ Image load error:', error);
+                this.uploadArea.classList.remove('uploading');
+                this.statusMessage.textContent = 'Error loading image. Please try a different file.';
+            };
+            
+            this.userImg.onload = () => {
+                console.log('✅ Image loaded successfully:', this.userImg.width, 'x', this.userImg.height);
+                this.uploadArea.classList.remove('uploading');
+                this.uploadArea.classList.add('uploaded');
+                
+                // Show success notification
+                this.showUploadSuccess();
+                
+                this.drawProfile();
+                this.updateFormState();
+            };
+            
+            this.userImg.src = e.target.result;
+        };
+        
+        reader.readAsDataURL(file);
     }
     
     showUploadSuccess() {
