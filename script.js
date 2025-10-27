@@ -707,11 +707,111 @@ If you are ready for growth, faith, and powerful inspiration, you should totally
     // SOCIAL MEDIA SHARE METHODS
     async shareToLinkedIn() {
         console.log('=== LinkedIn Share Started ===');
-        await this.shareProfile(
-            'LinkedIn',
-            'https://www.linkedin.com/feed/',
-            true // Allow Web Share API
-        );
+        
+        // Ensure image is generated
+        if (!this.profileImageFile) {
+            console.log('⚙️ Generating profile image...');
+            await this.generateProfileImageForSharing();
+        }
+        
+        try {
+            // Try Web Share API first (best option - works on mobile and modern browsers)
+            if (navigator.share) {
+                const shareData = {
+                    files: [this.profileImageFile],
+                    title: 'Faith & Energy Conference 1.0',
+                    text: this.shareMessage
+                };
+                
+                if (navigator.canShare && navigator.canShare(shareData)) {
+                    console.log('✓ Using Web Share API for LinkedIn');
+                    await navigator.share(shareData);
+                    this.showShareSuccess('LinkedIn');
+                    return;
+                }
+            }
+            
+            // Fallback: Copy both image and text, then open LinkedIn
+            console.log('📋 Copying content for LinkedIn...');
+            
+            // Copy image to clipboard
+            let imageCopied = false;
+            try {
+                if (navigator.clipboard && navigator.clipboard.write) {
+                    const clipboardItem = new ClipboardItem({
+                        'image/png': this.profileImageBlob
+                    });
+                    await navigator.clipboard.write([clipboardItem]);
+                    imageCopied = true;
+                    console.log('✓ Image copied to clipboard');
+                }
+            } catch (err) {
+                console.log('⚠️ Could not copy image:', err.message);
+            }
+            
+            // Copy text to clipboard
+            let textCopied = false;
+            try {
+                await navigator.clipboard.writeText(this.shareMessage);
+                textCopied = true;
+                console.log('✓ Text copied to clipboard');
+            } catch (err) {
+                console.log('⚠️ Could not copy text:', err.message);
+            }
+            
+            // Open LinkedIn
+            console.log('🌐 Opening LinkedIn...');
+            window.open('https://www.linkedin.com/feed/', '_blank', 'noopener,noreferrer');
+            
+            // Show instructions
+            if (imageCopied && textCopied) {
+                this.showLinkedInInstructions('both');
+            } else if (imageCopied) {
+                this.showLinkedInInstructions('image');
+            } else if (textCopied) {
+                this.showLinkedInInstructions('text');
+            } else {
+                this.showLinkedInInstructions('manual');
+            }
+            
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                console.log('ℹ️ User cancelled share');
+                return;
+            }
+            console.error('❌ LinkedIn share error:', error);
+            alert('Please download the image and share manually on LinkedIn.');
+        }
+    }
+    
+    // Show LinkedIn-specific instructions
+    showLinkedInInstructions(copiedType) {
+        let message = '';
+        
+        switch(copiedType) {
+            case 'both':
+                message = `✅ LinkedIn opened!\n\n1. Click "Start a post"\n2. Paste the image (Ctrl+V or Cmd+V)\n3. The caption is already in your clipboard - paste it too!\n4. Click "Post"`;
+                break;
+            case 'image':
+                message = `✅ LinkedIn opened!\n\nImage copied! Click "Start a post" and paste (Ctrl+V or Cmd+V)`;
+                break;
+            case 'text':
+                message = `✅ LinkedIn opened!\n\nCaption copied! Click "Start a post", upload the image, and paste the caption.`;
+                break;
+            case 'manual':
+                message = `✅ LinkedIn opened!\n\nClick "Start a post" and upload your profile image manually.`;
+                break;
+        }
+        
+        // Show as alert for now - you can customize this to a nicer modal
+        alert(message);
+        
+        // Also update status message
+        const statusMsg = document.getElementById('status-message');
+        if (statusMsg) {
+            statusMsg.textContent = 'Ready to post on LinkedIn!';
+            statusMsg.style.color = '#2d9a8c';
+        }
     }
     
     async shareToTwitter() {
