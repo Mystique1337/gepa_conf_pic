@@ -44,6 +44,19 @@
                     <!-- Tertiary input for user-facing camera on mobile -->
                     <input type="file" id="photo-upload-user-camera" accept="image/*" capture="user" style="display: none;">
                     
+                    <!-- Upload Progress Indicator -->
+                    <div class="upload-progress" id="upload-progress" style="display: none;">
+                        <div class="progress-content">
+                            <div class="progress-spinner">
+                                <div class="spinner-ring"></div>
+                            </div>
+                            <p class="progress-text" id="progress-text">Processing your image...</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progress-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- Success notification -->
                     <div class="upload-success" id="upload-success" style="display: none;">
                         <div class="success-content">

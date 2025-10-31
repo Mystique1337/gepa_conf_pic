@@ -11,6 +11,9 @@ class SimpleProfileGenerator {
         this.photoUploadCamera = document.getElementById('photo-upload-camera');
         this.photoUploadUserCamera = document.getElementById('photo-upload-user-camera');
         this.uploadArea = document.getElementById('upload-area');
+        this.uploadProgress = document.getElementById('upload-progress');
+        this.progressText = document.getElementById('progress-text');
+        this.progressFill = document.getElementById('progress-fill');
         this.uploadSuccess = document.getElementById('upload-success');
         this.nameInput = document.getElementById('name-input');
         this.generateBtn = document.getElementById('generate-btn');
@@ -23,6 +26,7 @@ class SimpleProfileGenerator {
         
         // State tracking
         this.profileGenerated = false;
+        this.isUploading = false;
         
         // Social media share buttons
         this.shareLinkedIn = document.getElementById('share-linkedin');
@@ -110,40 +114,8 @@ If you are ready for growth, faith, and powerful inspiration, you should totally
             console.log('🖱️ Upload area clicked');
             e.preventDefault();
             e.stopPropagation();
-            
-            // On mobile, show options or default to gallery
-            if (this.isMobile) {
-                console.log('📱 Mobile device detected');
-                // Try to use capture="environment" first for gallery on Android
-                // Falls back to photo library if needed
-                this.photoUpload.click();
-            } else {
-                this.photoUpload.click();
-            }
+            this.photoUpload.click();
         });
-        
-        // Touch events for mobile - simplified and more reliable
-        let touchHandled = false;
-        
-        this.uploadArea.addEventListener('touchstart', (e) => {
-            console.log('👆 Touch start on upload area');
-            touchHandled = false;
-            this.uploadArea.style.transform = 'scale(0.98)';
-        }, { passive: true });
-        
-        this.uploadArea.addEventListener('touchend', (e) => {
-            console.log('👆 Touch end on upload area');
-            this.uploadArea.style.transform = 'scale(1)';
-            
-            if (!touchHandled) {
-                touchHandled = true;
-                // Small delay to ensure touch is registered
-                setTimeout(() => {
-                    console.log('📱 Triggering file input from touch');
-                    this.photoUpload.click();
-                }, 100);
-            }
-        }, { passive: true });
         
         // Drag and drop events (desktop)
         this.uploadArea.addEventListener('dragover', (e) => {
@@ -269,15 +241,31 @@ If you are ready for growth, faith, and powerful inspiration, you should totally
             return;
         }
         
+        // Mark as uploading
+        this.isUploading = true;
         this.uploadArea.classList.add('uploading');
+        this.uploadProgress.style.display = 'block';
         this.uploadSuccess.style.display = 'none';
+        this.progressText.textContent = 'Processing your image...';
+        this.progressFill.style.width = '0%';
         this.statusMessage.textContent = 'Processing image...';
         
         const reader = new FileReader();
         
+        // Simulate progress
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += Math.random() * 30;
+            if (progress > 90) progress = 90;
+            this.progressFill.style.width = progress + '%';
+        }, 100);
+        
         reader.onerror = (error) => {
             console.error('❌ FileReader error:', error);
+            clearInterval(progressInterval);
+            this.isUploading = false;
             this.uploadArea.classList.remove('uploading');
+            this.uploadProgress.style.display = 'none';
             this.statusMessage.textContent = 'Error reading file. Please try again.';
             alert('Error reading file. Please try a different image.');
         };
@@ -288,28 +276,39 @@ If you are ready for growth, faith, and powerful inspiration, you should totally
             
             this.userImg.onerror = (error) => {
                 console.error('❌ Image load error:', error);
+                clearInterval(progressInterval);
+                this.isUploading = false;
                 this.uploadArea.classList.remove('uploading');
+                this.uploadProgress.style.display = 'none';
                 this.statusMessage.textContent = 'Error loading image. Please try a different file.';
                 alert('Error loading image. Please try a different file.');
             };
             
             this.userImg.onload = () => {
                 console.log('✅ Image loaded successfully:', this.userImg.width, 'x', this.userImg.height);
-                this.uploadArea.classList.remove('uploading');
-                this.uploadArea.classList.add('uploaded');
+                clearInterval(progressInterval);
+                this.progressFill.style.width = '100%';
                 
-                // Show success notification
-                this.showUploadSuccess();
-                
-                this.drawProfile();
-                this.updateFormState();
-                
-                // Scroll to form on mobile
-                if (this.isMobile) {
-                    setTimeout(() => {
-                        this.nameInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 300);
-                }
+                // Wait a moment to show completion
+                setTimeout(() => {
+                    this.uploadArea.classList.remove('uploading');
+                    this.uploadArea.classList.add('uploaded');
+                    this.uploadProgress.style.display = 'none';
+                    this.isUploading = false;
+                    
+                    // Show success notification
+                    this.showUploadSuccess();
+                    
+                    this.drawProfile();
+                    this.updateFormState();
+                    
+                    // Scroll to form on mobile
+                    if (this.isMobile) {
+                        setTimeout(() => {
+                            this.nameInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 300);
+                    }
+                }, 300);
             };
             
             this.userImg.src = e.target.result;
@@ -430,8 +429,8 @@ If you are ready for growth, faith, and powerful inspiration, you should totally
         // Update form styling
         this.nameInput.parentElement.classList.toggle('filled', hasName);
         
-        // Update generate button state
-        const canGenerate = hasImage && hasName && !this.profileGenerated;
+        // Update generate button state - disable if uploading
+        const canGenerate = hasImage && hasName && !this.profileGenerated && !this.isUploading;
         this.generateBtn.disabled = !canGenerate;
         
         // Show/hide share section based on generation state
@@ -447,7 +446,10 @@ If you are ready for growth, faith, and powerful inspiration, you should totally
         
         // Update status message
         if (!this.profileGenerated) {
-            if (!hasImage) {
+            if (this.isUploading) {
+                this.statusMessage.textContent = 'Image uploading... Please wait';
+                this.statusMessage.style.color = '#f4c430';
+            } else if (!hasImage) {
                 this.statusMessage.textContent = 'Please upload a photo';
                 this.statusMessage.style.color = '';
             } else if (!hasName) {

@@ -572,6 +572,68 @@ body {
     }
 }
 
+/* Upload Progress Indicator */
+.upload-progress {
+    margin-top: 15px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(45, 154, 140, 0.05), rgba(45, 154, 140, 0.1));
+    border-radius: 10px;
+    text-align: center;
+    border: 2px solid var(--light-teal);
+    animation: slideInUp 0.5s ease-out;
+}
+
+.progress-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.progress-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner-ring {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--medium-gray);
+    border-top: 4px solid var(--primary-teal);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.progress-text {
+    color: var(--primary-teal);
+    font-weight: 600;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--medium-gray);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 5px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-teal), var(--light-teal));
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 3px;
+}
+
 /* Upload Success Notification */
 .upload-success {
     margin-top: 15px;
