@@ -35,7 +35,7 @@ class SimpleProfileGenerator {
         this.shareWhatsApp = document.getElementById('share-whatsapp');
         this.shareInstagram = document.getElementById('share-instagram');
         
-        // Share message
+        // Share message - Faith & Energy Conference 1.0
         this.shareMessage = `I will be at Faith & Energy Conference 1.0 🔥
 
 📅 Nov 15, 2025

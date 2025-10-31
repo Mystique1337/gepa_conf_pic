@@ -4,6 +4,21 @@
  */
 
 /**
+ * Default LinkedIn post caption for Faith & Energy Conference
+ */
+export const DEFAULT_LINKEDIN_CAPTION = `I will be at Faith & Energy Conference 1.0 🔥
+
+📅 Nov 15, 2025
+📍 Pistis Annex Marwa, Lekki Lagos
+🕘 9AM sharp
+Theme: "The Great Light" (Matthew 4:16)
+
+If you are ready for growth, faith, and powerful inspiration, you should totally be there too! 💥
+👉 Register at conference.gepafrica.com
+
+#FaithAndEnergy #GEPA #TheGreatLight #IWillBeAttending #FaithVibesOnly`;
+
+/**
  * Download a blob as a file
  * @param {Blob} blob - The file blob to download
  * @param {string} filename - The filename for download
