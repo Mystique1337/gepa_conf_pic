@@ -21,6 +21,17 @@ class SimpleProfileGenerator {
         this.statusMessage = document.getElementById('status-message');
         this.shareSection = document.getElementById('share-section');
         
+        // Modal elements
+        this.captionModal = document.getElementById('caption-modal');
+        this.captionText = document.getElementById('caption-text');
+        this.viewCaptionBtn = document.getElementById('view-caption-btn');
+        this.copyCaptionBtn = document.getElementById('copy-caption-btn');
+        this.copyCaptionWithLink = document.getElementById('copy-caption-with-link');
+        this.modalDoneBtn = document.getElementById('modal-done-btn');
+        this.modalClose = document.getElementById('modal-close');
+        this.modalCopyStatus = document.getElementById('modal-copy-status');
+        this.captionCopyHint = document.getElementById('caption-copy-hint');
+        
         // Detect mobile device
         this.isMobile = this.detectMobile();
         
@@ -156,6 +167,20 @@ If you are ready for growth, faith, and powerful inspiration, you should totally
         this.shareFacebook.addEventListener('click', () => this.shareToFacebook());
         this.shareWhatsApp.addEventListener('click', () => this.shareToWhatsApp());
         this.shareInstagram.addEventListener('click', () => this.shareToInstagram());
+        
+        // Caption modal buttons
+        this.viewCaptionBtn.addEventListener('click', () => this.openCaptionModal());
+        this.copyCaptionBtn.addEventListener('click', () => this.copyCaption('text'));
+        this.copyCaptionWithLink.addEventListener('click', () => this.copyCaption('link'));
+        this.modalDoneBtn.addEventListener('click', () => this.closeCaptionModal());
+        this.modalClose.addEventListener('click', () => this.closeCaptionModal());
+        
+        // Close modal when clicking outside
+        this.captionModal.addEventListener('click', (e) => {
+            if (e.target === this.captionModal) {
+                this.closeCaptionModal();
+            }
+        });
     }
     
     loadTemplate() {
@@ -602,6 +627,108 @@ If you are ready for growth, faith, and powerful inspiration, you should totally
         link.click();
         document.body.removeChild(link);
         setTimeout(() => URL.revokeObjectURL(url), 100);
+    }
+    
+    // CAPTION MODAL METHODS
+    
+    // Open the caption preview modal
+    openCaptionModal() {
+        console.log('�️ Opening caption preview modal...');
+        
+        // Display the caption in the modal
+        this.captionText.textContent = this.shareMessage;
+        
+        // Show modal with animation
+        this.captionModal.style.display = 'flex';
+        setTimeout(() => {
+            this.captionModal.classList.add('show');
+        }, 10);
+    }
+    
+    // Close the caption preview modal
+    closeCaptionModal() {
+        console.log('❌ Closing caption modal');
+        this.captionModal.classList.remove('show');
+        setTimeout(() => {
+            this.captionModal.style.display = 'none';
+            this.modalCopyStatus.style.display = 'none';
+        }, 300);
+    }
+    
+    // Copy caption with different options
+    async copyCaption(mode = 'text') {
+        try {
+            let textToCopy = this.shareMessage;
+            
+            // Add share link if requested
+            if (mode === 'link') {
+                textToCopy += '\n\n📌 Share this event: https://conference.gepafrica.com/register';
+            }
+            
+            console.log(`📋 Copying caption (${mode} mode)...`);
+            
+            // Try modern Clipboard API first
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(textToCopy);
+                console.log('✅ Caption copied to clipboard (modern)!');
+                this.showModalCopySuccess(mode);
+            } else {
+                // Fallback for older browsers
+                this.fallbackCopyCaption(textToCopy, mode);
+            }
+        } catch (error) {
+            console.error('❌ Error copying caption:', error);
+            this.fallbackCopyCaption(textToCopy, mode);
+        }
+    }
+    
+    // Fallback method for browsers without Clipboard API
+    fallbackCopyCaption(textToCopy, mode = 'text') {
+        const textArea = document.createElement('textarea');
+        textArea.value = textToCopy;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            console.log('✅ Caption copied (fallback method)!');
+            this.showModalCopySuccess(mode);
+        } catch (error) {
+            console.error('❌ Fallback copy failed:', error);
+            alert('Could not copy caption. Please try manually selecting and copying the text.');
+        } finally {
+            document.body.removeChild(textArea);
+        }
+    }
+    
+    // Show success message in modal
+    showModalCopySuccess(mode) {
+        if (this.modalCopyStatus) {
+            const message = this.modalCopyStatus.querySelector('.copy-success-message');
+            if (mode === 'link') {
+                message.textContent = '✅ Caption + link copied! Ready to share!';
+            } else {
+                message.textContent = '✅ Caption copied! Paste it on LinkedIn now!';
+            }
+            
+            this.modalCopyStatus.style.display = 'block';
+            this.modalCopyStatus.style.animation = 'none';
+            
+            // Trigger reflow to restart animation
+            void this.modalCopyStatus.offsetWidth;
+            this.modalCopyStatus.style.animation = 'slideInUp 0.3s ease-out';
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                if (this.modalCopyStatus.style.display === 'block') {
+                    this.modalCopyStatus.style.animation = 'fadeOut 0.3s ease-out forwards';
+                    setTimeout(() => {
+                        this.modalCopyStatus.style.display = 'none';
+                    }, 300);
+                }
+            }, 3000);
+        }
     }
     
     // CORE SHARE FUNCTION - Handles all sharing logic

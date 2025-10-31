@@ -129,6 +129,49 @@
                             </div>
                         </div>
                         
+                        <!-- Manual Share Option: Copy Caption -->
+                        <div class="manual-share-section">
+                            <hr class="divider">
+                            <p class="manual-share-label">💡 Can't use auto-share?</p>
+                            <p class="manual-share-description">No problem! Copy the caption and post manually:</p>
+                            <button id="view-caption-btn" class="btn btn-caption">
+                                <span class="btn-icon">�️</span>
+                                View & Copy Caption
+                            </button>
+                            <p class="caption-copy-hint" id="caption-copy-hint" style="display: none;">✅ Caption copied! You can now post to LinkedIn</p>
+                        </div>
+                        
+                        <!-- Caption Preview Modal -->
+                        <div id="caption-modal" class="modal" style="display: none;">
+                            <div class="modal-overlay"></div>
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3>📋 Your Conference Caption</h3>
+                                    <button class="modal-close" id="modal-close">&times;</button>
+                                </div>
+                                <div class="caption-preview-box">
+                                    <p id="caption-text"></p>
+                                </div>
+                                <div class="modal-actions">
+                                    <button id="copy-caption-btn" class="btn btn-primary">
+                                        <span class="btn-icon">✂️</span>
+                                        Copy Caption
+                                    </button>
+                                    <button id="copy-caption-with-link" class="btn btn-secondary">
+                                        <span class="btn-icon">🔗</span>
+                                        Copy + Share Link
+                                    </button>
+                                    <button id="modal-done-btn" class="btn" style="background-color: var(--text-light); color: white;">
+                                        <span class="btn-icon">✓</span>
+                                        Done
+                                    </button>
+                                </div>
+                                <div class="modal-copy-status" id="modal-copy-status" style="display: none;">
+                                    <p class="copy-success-message" id="copy-success-message">✅ Copied to clipboard!</p>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <!-- Step 3: Download Button (secondary action) -->
                         <div class="download-section">
                             <p class="download-hint">Or save it for later:</p>
