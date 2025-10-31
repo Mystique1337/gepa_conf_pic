@@ -8,6 +8,8 @@ class SimpleProfileGenerator {
         
         // DOM elements
         this.photoUpload = document.getElementById('photo-upload');
+        this.photoUploadCamera = document.getElementById('photo-upload-camera');
+        this.photoUploadUserCamera = document.getElementById('photo-upload-user-camera');
         this.uploadArea = document.getElementById('upload-area');
         this.uploadSuccess = document.getElementById('upload-success');
         this.nameInput = document.getElementById('name-input');
@@ -15,6 +17,9 @@ class SimpleProfileGenerator {
         this.downloadBtn = document.getElementById('download-btn');
         this.statusMessage = document.getElementById('status-message');
         this.shareSection = document.getElementById('share-section');
+        
+        // Detect mobile device
+        this.isMobile = this.detectMobile();
         
         // State tracking
         this.profileGenerated = false;
@@ -63,6 +68,23 @@ If you are ready for growth, faith, and powerful inspiration, you should totally
         this.bindEvents();
         this.drawTemplate();
         this.updateFormState();
+        this.updateMobileHint();
+    }
+    
+    detectMobile() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+    
+    updateMobileHint() {
+        const hint = document.getElementById('upload-mobile-hint');
+        if (hint && this.isMobile) {
+            const ua = navigator.userAgent;
+            if (/iPhone|iPad|iPod/.test(ua)) {
+                hint.textContent = 'Tip: Press and hold to access Photos or Camera app';
+            } else if (/Android/.test(ua)) {
+                hint.textContent = 'Tip: Choose Photos or Camera from the menu';
+            }
+        }
     }
     
     bindEvents() {
@@ -72,12 +94,32 @@ If you are ready for growth, faith, and powerful inspiration, you should totally
             this.handleFileSelect(e);
         });
         
-        // Click event for upload area
+        // Camera capture inputs
+        this.photoUploadCamera.addEventListener('change', (e) => {
+            console.log('📷 Camera capture changed:', e.target.files);
+            this.handleFileSelect(e);
+        });
+        
+        this.photoUploadUserCamera.addEventListener('change', (e) => {
+            console.log('🤳 User camera capture changed:', e.target.files);
+            this.handleFileSelect(e);
+        });
+        
+        // Click event for upload area - enhanced for mobile
         this.uploadArea.addEventListener('click', (e) => {
             console.log('🖱️ Upload area clicked');
             e.preventDefault();
             e.stopPropagation();
-            this.photoUpload.click();
+            
+            // On mobile, show options or default to gallery
+            if (this.isMobile) {
+                console.log('📱 Mobile device detected');
+                // Try to use capture="environment" first for gallery on Android
+                // Falls back to photo library if needed
+                this.photoUpload.click();
+            } else {
+                this.photoUpload.click();
+            }
         });
         
         // Touch events for mobile - simplified and more reliable
@@ -201,6 +243,9 @@ If you are ready for growth, faith, and powerful inspiration, you should totally
         } else {
             console.warn('⚠️ No file selected');
         }
+        
+        // Reset the input so the same file can be selected again
+        e.target.value = '';
     }
     
     loadUserImage(file) {
@@ -226,7 +271,7 @@ If you are ready for growth, faith, and powerful inspiration, you should totally
         
         this.uploadArea.classList.add('uploading');
         this.uploadSuccess.style.display = 'none';
-        this.statusMessage.textContent = 'Uploading image...';
+        this.statusMessage.textContent = 'Processing image...';
         
         const reader = new FileReader();
         
@@ -234,6 +279,7 @@ If you are ready for growth, faith, and powerful inspiration, you should totally
             console.error('❌ FileReader error:', error);
             this.uploadArea.classList.remove('uploading');
             this.statusMessage.textContent = 'Error reading file. Please try again.';
+            alert('Error reading file. Please try a different image.');
         };
         
         reader.onload = (e) => {
@@ -244,6 +290,7 @@ If you are ready for growth, faith, and powerful inspiration, you should totally
                 console.error('❌ Image load error:', error);
                 this.uploadArea.classList.remove('uploading');
                 this.statusMessage.textContent = 'Error loading image. Please try a different file.';
+                alert('Error loading image. Please try a different file.');
             };
             
             this.userImg.onload = () => {
@@ -256,6 +303,13 @@ If you are ready for growth, faith, and powerful inspiration, you should totally
                 
                 this.drawProfile();
                 this.updateFormState();
+                
+                // Scroll to form on mobile
+                if (this.isMobile) {
+                    setTimeout(() => {
+                        this.nameInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 300);
+                }
             };
             
             this.userImg.src = e.target.result;

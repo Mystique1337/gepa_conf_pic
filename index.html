@@ -34,9 +34,15 @@
                             <div class="upload-icon">📷</div>
                             <p>Click here to upload your photo</p>
                             <p class="upload-hint">PNG, JPG up to 10MB</p>
+                            <p class="upload-mobile-hint" id="upload-mobile-hint"></p>
                         </div>
                     </div>
-                    <input type="file" id="photo-upload" accept="image/*" capture="environment" style="display: none;">
+                    <!-- Primary file input - accepts both gallery and camera -->
+                    <input type="file" id="photo-upload" accept="image/*" style="display: none;">
+                    <!-- Secondary input for camera-specific capture on mobile -->
+                    <input type="file" id="photo-upload-camera" accept="image/*" capture="environment" style="display: none;">
+                    <!-- Tertiary input for user-facing camera on mobile -->
+                    <input type="file" id="photo-upload-user-camera" accept="image/*" capture="user" style="display: none;">
                     
                     <!-- Success notification -->
                     <div class="upload-success" id="upload-success" style="display: none;">
