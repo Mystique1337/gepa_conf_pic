@@ -129,56 +129,48 @@
                             </div>
                         </div>
                         
-                        <!-- Manual Share Option: Copy Caption -->
+                        <!-- Manual Share Section with Caption Display -->
                         <div class="manual-share-section">
                             <hr class="divider">
                             <p class="manual-share-label">💡 Can't use auto-share?</p>
-                            <p class="manual-share-description">No problem! Copy the caption and post manually:</p>
-                            <button id="view-caption-btn" class="btn btn-caption">
-                                <span class="btn-icon">�️</span>
-                                View & Copy Caption
+                            <p class="manual-share-description">No problem! Here's your caption to copy:</p>
+                            
+                            <!-- Caption Display Box -->
+                            <div class="caption-box">
+                                <p id="caption-display-text"></p>
+                            </div>
+                            
+                            <!-- Copy Button -->
+                            <button id="copy-caption-btn" class="btn btn-caption">
+                                <span class="btn-icon">📋</span>
+                                Copy Caption
                             </button>
-                            <p class="caption-copy-hint" id="caption-copy-hint" style="display: none;">✅ Caption copied! You can now post to LinkedIn</p>
-                        </div>
-                        
-                        <!-- Caption Preview Modal -->
-                        <div id="caption-modal" class="modal" style="display: none;">
-                            <div class="modal-overlay"></div>
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h3>📋 Your Conference Caption</h3>
-                                    <button class="modal-close" id="modal-close">&times;</button>
-                                </div>
-                                <div class="caption-preview-box">
-                                    <p id="caption-text"></p>
-                                </div>
-                                <div class="modal-actions">
-                                    <button id="copy-caption-btn" class="btn btn-primary">
-                                        <span class="btn-icon">✂️</span>
-                                        Copy Caption
-                                    </button>
-                                    <button id="copy-caption-with-link" class="btn btn-secondary">
-                                        <span class="btn-icon">🔗</span>
-                                        Copy + Share Link
-                                    </button>
-                                    <button id="modal-done-btn" class="btn" style="background-color: var(--text-light); color: white;">
-                                        <span class="btn-icon">✓</span>
-                                        Done
-                                    </button>
-                                </div>
-                                <div class="modal-copy-status" id="modal-copy-status" style="display: none;">
-                                    <p class="copy-success-message" id="copy-success-message">✅ Copied to clipboard!</p>
-                                </div>
+                            <p class="caption-copy-hint" id="caption-copy-hint" style="display: none;">✅ Caption copied to clipboard!</p>
+                            
+                            <!-- Step-by-step guide -->
+                            <div class="share-guide">
+                                <h4>📍 Here's what to do next:</h4>
+                                <ol class="guide-steps">
+                                    <li><strong>Download your image</strong> below</li>
+                                    <li><strong>Go to LinkedIn</strong> and create a new post</li>
+                                    <li><strong>Upload your profile image</strong></li>
+                                    <li><strong>Paste the caption</strong> (we already copied it for you!)</li>
+                                    <li><strong>Click Share!</strong> 🎉</li>
+                                </ol>
                             </div>
                         </div>
+
                         
-                        <!-- Step 3: Download Button (secondary action) -->
+                        <!-- Download Section (Highlighted) -->
                         <div class="download-section">
-                            <p class="download-hint">Or save it for later:</p>
-                            <button id="download-btn" class="btn btn-secondary">
-                                <span class="btn-icon">💾</span>
-                                Download Profile Image
-                            </button>
+                            <div class="download-highlight">
+                                <p class="download-label">📥 Step 1: Download Your Image First</p>
+                                <button id="download-btn" class="btn btn-primary">
+                                    <span class="btn-icon">💾</span>
+                                    Download Profile Image
+                                </button>
+                                <p class="download-info">You'll need this to upload to LinkedIn</p>
+                            </div>
                         </div>
                     </div>
                 </div>
