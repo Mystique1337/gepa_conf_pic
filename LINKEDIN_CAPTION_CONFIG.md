@@ -12,7 +12,7 @@ I will be at Faith & Energy Conference 1.0 🔥
 🕘 9AM sharp
 Theme: "The Great Light" (Matthew 4:16)
 
-If you are ready for growth, faith, and powerful inspiration, you should totally be there too! 💥
+If you are ready for growth, direction, and networking that will improve your energy career, you should  be there too! 💥
 👉 Register at conference.gepafrica.com
 
 #FaithAndEnergy #GEPA #TheGreatLight #IWillBeAttending #FaithVibesOnly
