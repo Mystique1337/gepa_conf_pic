@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>GEPA Certificate Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+    <style>
+        /* Additional styles for certificate page */
+        .certificate-name {
+            font-family: 'Lobster', cursive;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>GEPA Certificate Generator</h1>
+            <p>Create your personalized certificate</p>
+        </div>
+
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="preview-section">
+                    <h2>Certificate Preview</h2>
+                    <div class="canvas-container">
+                        <canvas id="preview-canvas" width="800" height="600"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="form-section">
+                    <h2>Your Name</h2>
+                    <div class="form-group">
+                        <label for="name-input">Enter Your Full Name:</label>
+                        <input type="text" id="name-input" placeholder="Enter your name for the certificate">
+                    </div>
+                </div>
+
+                <div class="action-section">
+                    <button id="generate-btn" class="btn btn-primary btn-large" disabled>
+                        <span class="btn-icon">✨</span>
+                        Generate Certificate
+                    </button>
+                    <p class="status-message" id="status-message">Please enter your name</p>
+                    
+                    <!-- Download Section (appears after generation) -->
+                    <div class="share-section" id="download-section" style="display: none;">
+                        <div class="success-badge">
+                            <span class="badge-icon">🎉</span>
+                            <div class="badge-text">
+                                <h3>Certificate Generated Successfully!</h3>
+                                <p>Download your certificate now</p>
+                            </div>
+                        </div>
+                        
+                        <div class="download-section">
+                            <div class="download-highlight">
+                                <p class="download-label">📥 Download Your Certificate</p>
+                                <div class="social-buttons">
+                                    <button id="download-png-btn" class="btn btn-primary">
+                                        <span class="btn-icon">🖼️</span>
+                                        Download PNG
+                                    </button>
+                                    <button id="download-pdf-btn" class="btn btn-secondary">
+                                        <span class="btn-icon">📄</span>
+                                        Download PDF
+                                    </button>
+                                </div>
+                                <p class="download-info">Choose your preferred format</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="certificate.js"></script>
+</body>
+</html>
