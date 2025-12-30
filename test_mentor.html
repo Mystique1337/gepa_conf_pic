@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Mentor App</title>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://unpkg.com/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"></script>
+</head>
+<body>
+    <h1>Testing PDF Library</h1>
+    <div id="status">Loading...</div>
+    <script>
+        async function test() {
+            const status = document.getElementById('status');
+            try {
+                status.innerHTML = 'Checking PDF library...<br>';
+                
+                if (typeof PDFLib === 'undefined') {
+                    status.innerHTML += 'ERROR: PDFLib not loaded!<br>';
+                    return;
+                }
+                status.innerHTML += 'PDFLib loaded ✓<br>';
+                
+                if (typeof fontkit === 'undefined') {
+                    status.innerHTML += 'ERROR: fontkit not loaded!<br>';
+                    return;
+                }
+                status.innerHTML += 'fontkit loaded ✓<br>';
+                
+                status.innerHTML += 'Loading PDF file...<br>';
+                const response = await fetch('GMP CERTIFICATE FINANCE.pdf');
+                if (!response.ok) {
+                    status.innerHTML += 'ERROR loading PDF: ' + response.status + '<br>';
+                    return;
+                }
+                status.innerHTML += 'PDF file loaded ✓<br>';
+                
+                const pdfBytes = await response.arrayBuffer();
+                status.innerHTML += 'PDF size: ' + pdfBytes.byteLength + ' bytes<br>';
+                
+                const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
+                status.innerHTML += 'PDF parsed ✓<br>';
+                status.innerHTML += 'Pages: ' + pdfDoc.getPageCount() + '<br>';
+                
+                status.innerHTML += '<br><strong style="color: green;">All tests passed! App should work.</strong><br>';
+                status.innerHTML += '<br><a href="mentor_cert.html">Go to Mentor Certificate App</a>';
+                
+            } catch (error) {
+                status.innerHTML += '<br><strong style="color: red;">ERROR: ' + error.message + '</strong><br>';
+                console.error(error);
+            }
+        }
+        
+        window.onload = test;
+    </script>
+</body>
+</html>

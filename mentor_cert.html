@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Mentor Certificate Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://unpkg.com/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"></script>
+    <style>
+        .certificate-name {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+        }
+        
+        .form-section select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .form-section select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .form-section select:hover {
+            border-color: #3b82f6;
+        }
+        
+        .preview-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .pdf-preview {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .preview-placeholder {
+            text-align: center;
+            color: #6b7280;
+            padding: 40px;
+        }
+        
+        .preview-placeholder svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Mentor Certificate Generator</h1>
+            <p>Create your personalized mentor certificate</p>
+        </div>
+
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="preview-section">
+                    <h2>Certificate Preview</h2>
+                    <div class="preview-placeholder" id="preview-placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <p>Enter your name and select a department to preview your certificate</p>
+                    </div>
+                    <canvas id="pdf-preview-canvas" class="pdf-preview"></canvas>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="form-section">
+                    <h2>Certificate Details</h2>
+                    
+                    <div class="form-group">
+                        <label for="name-input">Enter Your Full Name:</label>
+                        <input type="text" id="name-input" placeholder="Enter your name" class="certificate-name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="department-select">Select Department:</label>
+                        <select id="department-select">
+                            <option value="">-- Select Department --</option>
+                            <option value="finance">Finance</option>
+                            <option value="legal">Legal</option>
+                            <option value="engineering">Engineering/Technical</option>
+                            <option value="hr">HR/PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="action-section">
+                    <button id="generate-btn" class="btn btn-primary btn-large" disabled>
+                        <span class="btn-icon">✨</span>
+                        Generate Certificate
+                    </button>
+                </div>
+
+                <div id="download-section" class="download-section" style="display: none;">
+                    <div class="success-message">
+                        <span class="success-icon">✓</span>
+                        <span>Certificate generated successfully!</span>
+                    </div>
+                    <button id="download-pdf-btn" class="btn btn-success btn-large">
+                        <span class="btn-icon">⬇️</span>
+                        Download Certificate (PDF)
+                    </button>
+                </div>
+
+                <div id="status-message" class="status-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="mentor_cert.js"></script>
+</body>
+</html>

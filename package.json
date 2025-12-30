@@ -8,12 +8,23 @@
     "dev": "python -m http.server 3000",
     "start": "python -m http.server 8080"
   },
-  "keywords": ["gepa", "profile", "generator", "image", "template", "canvas"],
+  "keywords": [
+    "gepa",
+    "profile",
+    "generator",
+    "image",
+    "template",
+    "canvas"
+  ],
   "author": "Mystique1337",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/Mystique1337/gepa-profile-generator.git"
   },
-  "homepage": "https://github.com/Mystique1337/gepa-profile-generator"
+  "homepage": "https://github.com/Mystique1337/gepa-profile-generator",
+  "dependencies": {
+    "@pdf-lib/fontkit": "^1.1.1",
+    "pdf-lib": "^1.17.1"
+  }
 }
