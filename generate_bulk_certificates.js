@@ -103,16 +103,23 @@ async function generateCertificate(name, department) {
         // Get first page
         const pages = pdfDoc.getPages();
         const firstPage = pages[0];
-        const { height } = firstPage.getSize();
-        
+        const { width, height } = firstPage.getSize();
+
         // Convert name to Title Case
         const titleCaseName = toTitleCase(name);
-        
+
+        // Shrink font until name fits within the line
+        const maxNameWidth = width - nameConfig.x - 80;
+        let fontSize = nameConfig.fontSize;
+        while (fontSize > 10 && poppinsFont.widthOfTextAtSize(titleCaseName, fontSize) > maxNameWidth) {
+            fontSize -= 0.5;
+        }
+
         // Draw name on certificate
         firstPage.drawText(titleCaseName, {
             x: nameConfig.x,
             y: height - nameConfig.y,
-            size: nameConfig.fontSize,
+            size: fontSize,
             font: poppinsFont,
             color: rgb(0, 0, 0),
         });

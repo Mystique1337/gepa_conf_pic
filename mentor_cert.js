@@ -268,11 +268,18 @@ class MentorCertificateGenerator {
             const font = poppinsFont || await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
             console.log('Using font:', poppinsFont ? 'Poppins Bold' : 'Helvetica Bold');
             
+            // Shrink font until name fits within the line
+            const maxNameWidth = width - this.nameConfig.x - 80;
+            let fontSize = this.nameConfig.fontSize;
+            while (fontSize > 10 && font.widthOfTextAtSize(titleCaseName, fontSize) > maxNameWidth) {
+                fontSize -= 0.5;
+            }
+
             // Draw the name on the certificate in Title Case
             firstPage.drawText(titleCaseName, {
                 x: this.nameConfig.x,
                 y: height - this.nameConfig.y,
-                size: this.nameConfig.fontSize,
+                size: fontSize,
                 font: font,
                 color: rgb(
                     this.nameConfig.color.r,
