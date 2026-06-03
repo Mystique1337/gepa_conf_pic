@@ -68,10 +68,10 @@ const certificates = {
 
 // PDF file mapping
 const pdfFiles = {
-    'finance': 'GMP CERTIFICATE FINANCE.pdf',
-    'legal': 'GMP CERTIFICATE legal.pdf',
-    'engineering': 'GMP CERTIFICATE  NGINEERING TECHNICAL.pdf',
-    'hr': 'GMP CERTIFICATE HR PM.pdf'
+    'finance': 'new templates /cohort 2 cert -finance.pdf',
+    'legal': 'new templates /cohort 2 cert -LEGAL.pdf',
+    'engineering': 'new templates /cohort 2 cert -engineering.pdf',
+    'hr': 'new templates /cohort 2 cert -HR ADMIN.pdf'
 };
 
 // Position configuration
