@@ -268,8 +268,8 @@ class MentorCertificateGenerator {
             const font = poppinsFont || await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
             console.log('Using font:', poppinsFont ? 'Poppins Bold' : 'Helvetica Bold');
             
-            // Shrink font until name fits within the line
-            const maxNameWidth = width - this.nameConfig.x - 80;
+            // Shrink font until name fits within the white area (sidebar takes ~30% of right side)
+            const maxNameWidth = width * 0.70 - this.nameConfig.x;
             let fontSize = this.nameConfig.fontSize;
             while (fontSize > 10 && font.widthOfTextAtSize(titleCaseName, fontSize) > maxNameWidth) {
                 fontSize -= 0.5;

@@ -108,8 +108,8 @@ async function generateCertificate(name, department) {
         // Convert name to Title Case
         const titleCaseName = toTitleCase(name);
 
-        // Shrink font until name fits within the line
-        const maxNameWidth = width - nameConfig.x - 80;
+        // Shrink font until name fits within the white area (sidebar takes ~30% of right side)
+        const maxNameWidth = width * 0.70 - nameConfig.x;
         let fontSize = nameConfig.fontSize;
         while (fontSize > 10 && poppinsFont.widthOfTextAtSize(titleCaseName, fontSize) > maxNameWidth) {
             fontSize -= 0.5;
